@@ -2,11 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone') {
-            steps {
-                git 'https://github.com/sachinsharma203209-prog/accountsmate-pro.git'
-            }
-        }
+        
 
         stage('Install Dependencies') {
             steps {
