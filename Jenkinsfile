@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     stages {
-        
 
-        stage('Install Dependencies') {
+        stage('Install') {
             steps {
                 sh 'npm install'
             }
@@ -16,9 +15,12 @@ pipeline {
             }
         }
 
-        stage('Restart App') {
+        stage('Deploy to Nginx') {
             steps {
-                sh 'pm2 restart all || pm2 start server.js'
+                sh '''
+                sudo rm -rf /usr/share/nginx/html/*
+                sudo cp -r dist/* /usr/share/nginx/html/
+                '''
             }
         }
     }
