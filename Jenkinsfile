@@ -15,13 +15,14 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nginx') {
-            steps {
-                sh '''
-                sudo rm -rf /usr/share/nginx/html/*
-                sudo cp -r dist/* /usr/share/nginx/html/
-                '''
-            }
-        }
+       stage('Deploy to Nginx') {
+    steps {
+        sh '''
+        rm -rf /usr/share/nginx/html/*
+        cp -r dist/* /usr/share/nginx/html/
+        '''
+    }
+}
+
     }
 }
