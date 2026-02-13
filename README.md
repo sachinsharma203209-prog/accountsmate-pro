@@ -1,73 +1,120 @@
-# Welcome to your Lovable project
+# Production-Ready Ecommerce SaaS (Frontend + Backend)
 
-## Project info
+This repository now contains a complete full-stack ecommerce SaaS with a separated React frontend and Node/Express backend.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Folder Structure
 
-## How can I edit this code?
-DHH!
-There are several ways of editing your application.
+```bash
+.
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   └── services/
+│   ├── Dockerfile
+│   └── .env.example
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── config/
+│   │   └── utils/
+│   ├── prisma/
+│   │   ├── schema.prisma
+│   │   └── seed.js
+│   ├── Dockerfile
+│   └── .env.example
+├── docker-compose.yml
+└── .env.example
+```
 
-**Use Lovable**
+## Features Implemented
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Customer Side
+- Auth: Register, login, JWT auth, protected routes.
+- Products: list, category filter, search, detail page.
+- Cart: add/remove/update quantity, persisted in DB.
+- Checkout: Stripe Checkout session creation, redirect, order creation.
+- Orders: list user orders + order detail page.
 
-Changes made via Lovable will be committed automatically to this repo.
+### Admin Dashboard
+- Dashboard metrics: total sales, orders, users, products.
+- Products CRUD (including image URL field).
+- Categories CRUD.
+- Orders management and status updates.
+- Users list + role updates.
 
-**Use your preferred IDE**
+## Tech Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Frontend: React (Vite), Tailwind CSS, Axios, React Router, Stripe.js
+- Backend: Node.js, Express.js, Prisma, JWT, bcrypt, Stripe API
+- DB: PostgreSQL
+- DevOps: Docker + Docker Compose (frontend, backend, postgres)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Environment Setup
 
-Follow these steps:
+### 1) Create env files
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+cp .env.example .env
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+> Update all Stripe and JWT values before production.
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 2) Run with Docker Compose
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+docker compose up --build
+```
+
+Services:
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:5000`
+- Postgres: `localhost:5432`
+
+## Local Non-Docker Setup
+
+### Backend
+```bash
+cd backend
+npm install
+npx prisma generate
+npx prisma migrate dev
+npm run prisma:seed
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Stripe Setup Instructions
 
-**Use GitHub Codespaces**
+1. Create Stripe account and retrieve API keys.
+2. Put keys in env files:
+   - `backend/.env`
+     - `STRIPE_SECRET_KEY`
+     - `STRIPE_WEBHOOK_SECRET`
+   - `frontend/.env`
+     - `VITE_STRIPE_PUBLISHABLE_KEY`
+3. Start Stripe webhook forwarding:
+   ```bash
+   stripe listen --forward-to localhost:5000/api/checkout/webhook
+   ```
+4. Copy generated webhook signing secret into `STRIPE_WEBHOOK_SECRET`.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Production Notes
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- Use strong `JWT_SECRET` and secure secret management (vault/CI secrets).
+- Restrict CORS `FRONTEND_URL` to real frontend domain.
+- Use HTTPS behind reverse proxy/load balancer.
+- Add file storage integration (S3/R2/GCS) for real image upload implementation.
+- Add monitoring, structured logs, and CI/CD checks.
